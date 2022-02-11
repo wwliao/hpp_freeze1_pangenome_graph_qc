@@ -61,7 +61,7 @@
     ```
 6. Drop homozygous reference records
 
-	Due to the redundant structures in the pangenome graph,
+	Due to redundant structures in the pangenome graphs,
 	there are records with GT != 0|0 or 0/0 but their traversals spell the same REF alleles (see below for 3 examples).
 
 	```
@@ -70,7 +70,7 @@
 	chr1 8228919 . AAA   AAA   60 . AT=>3699499>3699498>3699488,>3699499<3699490<3699489>3699488         GT 1|1
 	```
 
-	Therefore, we need to drop these hidden homozygous reference records.
+	We need to drop these hidden homozygous reference records before further analysis.
 
 	```sh
 	bcftools -e 'REF=ALT' \
