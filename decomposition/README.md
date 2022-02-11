@@ -73,9 +73,9 @@
 	We need to drop these hidden homozygous reference records before further analysis.
 
 	```sh
-	bcftools -e 'REF=ALT' \
-	         -Oz -o $SAMPLE.$GRAPH.decomposed.concise.vcf.gz \
-	         $SAMPLE.$GRAPH.decomposed.vcf.gz \
+	bcftools view -e 'REF=ALT' \
+	              -Oz -o $SAMPLE.$GRAPH.decomposed.concise.vcf.gz \
+	              $SAMPLE.$GRAPH.decomposed.vcf.gz \
         && bcftools index -t $SAMPLE.$GRAPH.decomposed.concise.vcf.gz
 	```
 
