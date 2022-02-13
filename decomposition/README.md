@@ -70,13 +70,13 @@
 	chr1 8228919 . AAA   AAA   60 . AT=>3699499>3699498>3699488,>3699499<3699490<3699489>3699488         GT 1|1
 	```
 
-	We need to drop these hidden homozygous reference records before further analysis.
+	We need to drop these false alternate records before further analysis.
 
 	```sh
 	bcftools view -e 'REF=ALT' \
-	              -Oz -o $SAMPLE.$GRAPH.decomposed.concise.vcf.gz \
+	              -Oz -o $SAMPLE.$GRAPH.decomposed.nonref.vcf.gz \
 	              $SAMPLE.$GRAPH.decomposed.vcf.gz \
-        && bcftools index -t $SAMPLE.$GRAPH.decomposed.concise.vcf.gz
+        && bcftools index -t $SAMPLE.$GRAPH.decomposed.nonref.vcf.gz
 	```
 
 7. Update GTs and remove duplicates
@@ -84,7 +84,7 @@
     Records decomposed from different level of snarls might represent exactly the same variant but with different genotypes.
 
     ```sh
-    python3 remove_duplicates.py $SAMPLE.$GRAPH.decomposed.concise.vcf.gz
+    python3 remove_duplicates.py $SAMPLE.$GRAPH.decomposed.nonref.vcf.gz
     ```
 
 # To-do
