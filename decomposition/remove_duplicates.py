@@ -18,6 +18,25 @@ def get_alt_count(genotype):
             count += int(allele)
     return count
 
+def choose_genotype(genotypes):
+    for t in genotypes:
+        if "0|1" in genotypes[t] and "1|0" in genotypes[t]:
+            genotypes[t].append("1|1")
+    t = sorted(genotypes, reverse=True)[0]
+    lv, ss = t
+    gt = sorted(genotypes[t], key=get_alt_count, reverse=True)[0]
+    if gt in [".|1", "1|.", "./1", "1/."]:
+        for t in sorted(genotypes, reverse=True)[1:]:
+            if gt.replace(".", "1") in genotypes[t]:
+                lv, ss = t
+                gt = gt.replace(".", "1")
+                break
+            if gt.replace(".", "0") in genotypes[t]:
+                lv, ss = t
+                gt = gt.replace(".", "0")
+                break
+    return (lv, ss, gt)
+
 prefix = re.search("(\S+)\.vcf(?:\.gz)?", basename(args.vcffile))[1]
 with gzip.open(args.vcffile, "rt", encoding="utf-8") as infile:
     with open(f"{prefix}.rmdup.vcf", "w") as outfile:
@@ -47,23 +66,13 @@ with gzip.open(args.vcffile, "rt", encoding="utf-8") as infile:
                     genotypes[(lv, ss)].append(gt)
                 else:
                     outfile.write("\t".join(record_cols))
-                    t = sorted(genotypes, reverse=True)[0]
-                    lowest_lv, lowest_ss = t
-                    outfile.write(f";LV={lowest_lv};SS={lowest_ss}\tGT")
-                    if "0|1" in genotypes[t] and "1|0" in genotypes[t]:
-                        genotypes[t].append("1|1")
-                    genotype = sorted(genotypes[t], key=get_alt_count, reverse=True)[0]
-                    outfile.write(f"\t{genotype}\n")
+                    lowest_lv, lowest_ss, genotype = choose_genotype(genotypes)
+                    outfile.write(f";LV={lowest_lv};SS={lowest_ss}\tGT\t{genotype}\n")
                     seen_id = id
                     record_cols = cols[:-2]
                     genotypes = defaultdict(list)
                     genotypes[(lv, ss)].append(gt)
 
         outfile.write("\t".join(record_cols))
-        t = sorted(genotypes, reverse=True)[0]
-        lowest_lv, lowest_ss = t
-        outfile.write(f";LV={lowest_lv};SS={lowest_ss}\tGT")
-        if "0|1" in genotypes[t] and "1|0" in genotypes[t]:
-            genotypes[t].append("1|1")
-        genotype = sorted(genotypes[t], key=get_alt_count, reverse=True)[0]
-        outfile.write(f"\t{genotype}\n")
+        lowest_lv, lowest_ss, genotype = choose_genotype(genotypes)
+        outfile.write(f";LV={lowest_lv};SS={lowest_ss}\tGT\t{genotype}\n")
