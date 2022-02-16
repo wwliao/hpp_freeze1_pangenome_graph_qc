@@ -40,7 +40,8 @@ def decompose_traversal(query, target, coords):
                 rev_target_steps = get_steps(reverse_path(target_path))
                 source = (i, j)
                 has_inv = False
-                if set(rev_target_steps) & set(query_decomposed_steps):
+                # INV should only happen between source and sink steps (exclusive)
+                if set(rev_target_steps[1:-1]) & set(query_decomposed_steps[1:-1]):
                     has_inv = True
                 yield query_path, target_path, target_coord, has_inv
             else:
