@@ -1,4 +1,4 @@
-# Graph variant decomposition (work in progress)
+# Decomposition of graph variants
 
 1. Extract a given sample from the VG-deconstructed VCF
 
