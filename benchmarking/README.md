@@ -1,4 +1,4 @@
-# Benchmarking of graph variants
+# Benchmarking of graph variants (work in progress)
 
 ## Short variants
 
