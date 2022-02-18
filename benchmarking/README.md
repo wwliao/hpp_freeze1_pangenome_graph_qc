@@ -33,9 +33,10 @@
 
 	```sh
 	PREFIX=$(basename $VCF .vcf.gz)
-	bcftools annotate -a ${BEDFILE} \
+	echo -e '##INFO=<ID=Regions,Number=.,Type=String,Description="Tags for regions">' > hdr.txt
+	bcftools annotate -a stratification_regions.bed.gz \
 	                  -c CHROM,FROM,TO,INFO/Regions \
-	                  -h ${HEADER} \
+	                  -h hdr.txt \
 	                  -l Regions:unique \
 	                  -Oz -o ${PREFIX}.annotated.vcf.gz \
 	                  ${VCF} \
