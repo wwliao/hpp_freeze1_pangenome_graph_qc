@@ -87,8 +87,6 @@
     python3 remove_duplicates.py $SAMPLE.$GRAPH.decomposed.nonref.vcf.gz
     ```
 
-# To-do
-- Figure out why there are still redundant structures in Minigraph-Cactus
-
 # Known issues
+- False alternate records are caused by redundant structures in pangenome graphs (GFAffix doesn't catch every possible case?)
 - VG-deconstructed AT fields not necessarily consistent with different levels (see [issue #3541](https://github.com/vgteam/vg/issues/3541))

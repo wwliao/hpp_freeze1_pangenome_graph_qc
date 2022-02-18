@@ -55,5 +55,5 @@
 
 ## Thoughts
 
-1. Do we need to add `--Xloose-match-distance` when running `rtg vcfeval`?
+1. Do we need to add `--Xloose-match-distance` (seems this option is only for GA4GH mode) when running `rtg vcfeval`?
 2. Should we move the dipcall confident regions to the annotation step instead of feeding into `rtg vcfeval` at the benchmarking step?
