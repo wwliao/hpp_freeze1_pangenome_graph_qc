@@ -61,7 +61,7 @@ for v in vcf:
         source_id = map2source[id]
         nested_count = 0
         # Check both REF and ALT traversals
-        # since child REF traversal might be in parent's ALT traversal
+        # since child REF traversal might be in source's ALT traversal
         alts = v.INFO.get("AT").split(",")
         for alt in alts:
             for source_alt in source_alts[source_id]:
