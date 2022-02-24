@@ -60,13 +60,15 @@ for v in vcf:
     if id in map2source:
         source_id = map2source[id]
         nested_count = 0
-        alts = v.INFO.get("AT").split(",")[1:]
+        # Check both REF and ALT traversals
+        # since child REF traversal might be in parent's ALT traversal
+        alts = v.INFO.get("AT").split(",")
         for alt in alts:
             for source_alt in source_alts[source_id]:
                 if re.search(alt + "\D+", source_alt + "$"):
                     nested_count += 1
                     break
-        if nested_count == len(alts):
+        if nested_count >= len(source_alts[source_id]):
             w.write_record(v)
         else:
             e.write_record(v)
