@@ -2,7 +2,6 @@
 import re
 import gzip
 import argparse
-from os.path import basename
 from collections import defaultdict
 
 parser = argparse.ArgumentParser()
@@ -37,7 +36,7 @@ def choose_genotype(genotypes):
                 break
     return (lv, ss, gt)
 
-prefix = re.search("(\S+)\.vcf(?:\.gz)?", basename(args.vcffile))[1]
+prefix = re.search("(\S+)\.vcf(?:\.gz)?", args.vcffile)[1]
 with gzip.open(args.vcffile, "rt", encoding="utf-8") as infile:
     with open(f"{prefix}.rmdup.vcf", "w") as outfile:
         seen_id = ""
