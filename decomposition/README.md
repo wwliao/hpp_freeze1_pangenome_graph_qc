@@ -1,6 +1,12 @@
 # Decomposition of graph variants
 
-1. Extract a given sample from the VG-deconstructed VCF
+1. Filter snarls with reference length > 100kb using [`vcfbub`](https://github.com/pangenome/vcfbub)
+
+	```sh
+	vcfbub -r 100000 -i $VCF
+	```
+
+2. Extract a given sample from the VG-deconstructed VCF
 
     ```sh
     PREFIX=$(basename $VCF .vcf.gz)
@@ -10,13 +16,13 @@
 	    && bcftools index -t $SAMPLE.$PREFIX.vcf.gz
     ```
 
-2. Drop any sites whose traversals aren’t nested in their parents’ (see [issue #3541](https://github.com/vgteam/vg/issues/3541))
+3. Drop any sites whose traversals aren’t nested in their parents’ (see [issue #3541](https://github.com/vgteam/vg/issues/3541))
 
 	```sh
 	drop_inconsistent_sites.py $SAMPLE.$PREFIX.vcf.gz
 	```
 
-3. Split multiallelic sites into biallelic records
+4. Split multiallelic sites into biallelic records
 
     We need to compare traversals between reference and alternate to decompose graph variants.
 	Therefore, it is easier to work with if the VCF file is biallelic instead of multiallelic.
@@ -27,7 +33,7 @@
 	              $SAMPLE.$PREFIX.consistent.vcf.gz
 	```
 
-4. Convert the format of HPRC pangenome graphs from GFA to HashGraph/ODGI/PackedGraph
+5. Convert the format of HPRC pangenome graphs from GFA to HashGraph/ODGI/PackedGraph
 
     There are two HPRC pangenome graphs:
     
@@ -40,7 +46,7 @@
     vg convert -g -p -t 36 <input GFA> > <output PackedGraph>
     ```
 
-5. Decompose graph variants through comparing traversals between reference and alternate
+6. Decompose graph variants through comparing traversals between reference and alternate
 
     `decompose_graph_variants.py` requires the following packages to be installed:
 
@@ -59,7 +65,7 @@
         && bcftools index -t $SAMPLE.$GRAPH.decomposed.vcf.gz \
         && rm $SAMPLE.$GRAPH.decomposed.unsorted.vcf.gz
     ```
-6. Drop homozygous reference records
+7. Drop homozygous reference records
 
 	Due to redundant structures in the pangenome graphs,
 	there are records with GT != 0|0 or 0/0 but their traversals spell the same REF alleles (see below for 3 examples).
@@ -79,7 +85,7 @@
         && bcftools index -t $SAMPLE.$GRAPH.decomposed.nonref.vcf.gz
 	```
 
-7. Update GTs and remove duplicates
+8. Update GTs and remove duplicates
 
     Records decomposed from different level of snarls might represent exactly the same variant but with different genotypes.
 
