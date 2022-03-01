@@ -19,11 +19,11 @@ for v in vcf:
         else:
             vtype = "INDEL"
         truth_count["Conf"][vtype][decision] += 1
-        truth_count["Conf"]["ALL"][decision] += 1
+        truth_count["Conf"]["Both"][decision] += 1
         if v.INFO.get("Regions"):
             for region in v.INFO.get("Regions").split(","):
                 truth_count[region][vtype][decision] += 1
-                truth_count[region]["ALL"][decision] += 1
+                truth_count[region]["Both"][decision] += 1
 vcf.close()
 
 query_count = defaultdict(lambda: defaultdict(lambda: defaultdict(int)))
@@ -36,15 +36,15 @@ for v in vcf:
         else:
             vtype = "INDEL"
         query_count["Conf"][vtype][decision] += 1
-        query_count["Conf"]["ALL"][decision] += 1
+        query_count["Conf"]["Both"][decision] += 1
         if v.INFO.get("Regions"):
             for region in v.INFO.get("Regions").split(","):
                 query_count[region][vtype][decision] += 1
-                query_count[region]["ALL"][decision] += 1
+                query_count[region]["Both"][decision] += 1
 vcf.close()
 
 regions = sorted(set(query_count) | set(truth_count))
-vtypes = ["ALL", "SNP", "INDEL"]
+vtypes = ["Both", "SNP", "INDEL"]
 
 # Calculate recall, precision, and F1 score
 with open(args.outfile, "w") as outfile:
