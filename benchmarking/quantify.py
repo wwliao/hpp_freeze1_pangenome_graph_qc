@@ -5,6 +5,8 @@ from cyvcf2 import VCF
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-o", "--outfile", required=True)
+parser.add_argument("-s", "--sample", required=True)
+parser.add_argument("-g", "--graph", required=True)
 parser.add_argument("truthvcf")
 parser.add_argument("queryvcf")
 args = parser.parse_args()
@@ -18,8 +20,8 @@ for v in vcf:
             vtype = "SNP"
         else:
             vtype = "INDEL"
-        truth_count["Conf"][vtype][decision] += 1
-        truth_count["Conf"]["Both"][decision] += 1
+        truth_count["Confident"][vtype][decision] += 1
+        truth_count["Confident"]["Both"][decision] += 1
         if v.INFO.get("Regions"):
             for region in v.INFO.get("Regions").split(","):
                 truth_count[region][vtype][decision] += 1
@@ -35,8 +37,8 @@ for v in vcf:
             vtype = "SNP"
         else:
             vtype = "INDEL"
-        query_count["Conf"][vtype][decision] += 1
-        query_count["Conf"]["Both"][decision] += 1
+        query_count["Confident"][vtype][decision] += 1
+        query_count["Confident"]["Both"][decision] += 1
         if v.INFO.get("Regions"):
             for region in v.INFO.get("Regions").split(","):
                 query_count[region][vtype][decision] += 1
@@ -48,7 +50,7 @@ vtypes = ["Both", "SNP", "INDEL"]
 
 # Calculate recall, precision, and F1 score
 with open(args.outfile, "w") as outfile:
-    outfile.write("Region\tVariant_Type\tTP-base\tTP-call\t")
+    outfile.write("Sample\tGraph\tRegion\tVariant_Type\tTP-base\tTP-call\t")
     outfile.write("FN\tFN_CA\tFP\tFP_CA\tRecall\tPrecision\tF1\n")
     for region in regions:
         for vtype in vtypes:
@@ -61,7 +63,7 @@ with open(args.outfile, "w") as outfile:
             query_fp_ca = query_count[region][vtype]["FP_CA"]
             precision = query_tp / (query_tp + query_fp + query_fp_ca) * 100
             f1 = 2 * recall * precision / (recall + precision)
-            outfile.write(f"{region}\t{vtype}\t{truth_tp}\t{query_tp}\t")
+            outfile.write(f"{args.sample}\t{args.graph}\t{region}\t{vtype}\t{truth_tp}\t{query_tp}\t")
             outfile.write(f"{truth_fn}\t{truth_fn_ca}\t")
             outfile.write(f"{query_fp}\t{query_fp_ca}\t")
             outfile.write(f"{recall:.2f}\t{precision:.2f}\t{f1:.2f}\n")
