@@ -7,6 +7,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("-o", "--outfile", required=True)
 parser.add_argument("-s", "--sample", required=True)
 parser.add_argument("-g", "--graph", required=True)
+parser.add_argument("-c", "--confident", required=True)
 parser.add_argument("truthvcf")
 parser.add_argument("queryvcf")
 args = parser.parse_args()
@@ -20,12 +21,15 @@ for v in vcf:
             vtype = "SNP"
         else:
             vtype = "INDEL"
-        truth_count["Confident"][vtype][decision] += 1
-        truth_count["Confident"]["Both"][decision] += 1
-        if v.INFO.get("Regions"):
-            for region in v.INFO.get("Regions").split(","):
+        if v.INFO.get("REGION") and args.confident in v.INFO.get("REGION").split(","):
+            truth_count["Confident"][vtype][decision] += 1
+            truth_count["Confident"]["Both"][decision] += 1
+            for region in v.INFO.get("REGION").split(","):
                 truth_count[region][vtype][decision] += 1
                 truth_count[region]["Both"][decision] += 1
+        else:
+            truth_count["Unconfident"][vtype][decision] += 1
+            truth_count["Unconfident"]["Both"][decision] += 1
 vcf.close()
 
 query_count = defaultdict(lambda: defaultdict(lambda: defaultdict(int)))
@@ -37,12 +41,15 @@ for v in vcf:
             vtype = "SNP"
         else:
             vtype = "INDEL"
-        query_count["Confident"][vtype][decision] += 1
-        query_count["Confident"]["Both"][decision] += 1
-        if v.INFO.get("Regions"):
-            for region in v.INFO.get("Regions").split(","):
+        if v.INFO.get("REGION") and args.confident in v.INFO.get("REGION").split(","):
+            query_count["Confident"][vtype][decision] += 1
+            query_count["Confident"]["Both"][decision] += 1
+            for region in v.INFO.get("REGION").split(","):
                 query_count[region][vtype][decision] += 1
                 query_count[region]["Both"][decision] += 1
+        else:
+            query_count["Unconfident"][vtype][decision] += 1
+            query_count["Unconfident"]["Both"][decision] += 1
 vcf.close()
 
 regions = sorted(set(query_count) | set(truth_count))
