@@ -35,9 +35,9 @@ def decompose_traversal(query, target, coords):
                 coords = coords[:end]
                 break
     source = (0, 0)
-    for i, target_step in enumerate(target_steps):
-        if i > 0 and target_step in query_steps[source[1]+1:]:
-            j = query_steps.index(target_step, source[1]+1)
+    for i, target_step in enumerate(target_steps[:-1]):
+        if i > 0 and target_step in query_steps[source[1]+1:-1]:
+            j = query_steps[:-1].index(target_step, source[1]+1)
             target_interval = i - source[0] - 1
             query_interval = j - source[1] - 1
             if target_interval > 0 or query_interval > 0:
@@ -55,6 +55,22 @@ def decompose_traversal(query, target, coords):
                 yield query_path, target_path, target_coord, has_inv
             else:
                 source = (i, j)
+
+    # Process the tailing variant
+    sink = (len(target_steps) - 1, len(query_steps) - 1)
+    target_interval = sink[0] - source[0] - 1
+    query_interval = sink[1] - source[1] - 1
+    if target_interval > 0 or query_interval > 0:
+        target_path = "".join(target_steps[source[0]:sink[0]+1])
+        target_coord = coords[source[0]:sink[0]+1]
+        query_decomposed_steps = query_steps[source[1]:sink[1]+1]
+        query_path = "".join(query_decomposed_steps)
+        rev_target_steps = get_steps(reverse_path(target_path))
+        has_inv = False
+        # INV should only happen between source and sink steps (exclusive)
+        if set(rev_target_steps[1:-1]) & set(query_decomposed_steps[1:-1]):
+            has_inv = True
+        yield query_path, target_path, target_coord, has_inv
 
 def get_allele_seq(path, graph):
     seq = ""
