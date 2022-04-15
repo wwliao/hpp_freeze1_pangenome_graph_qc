@@ -28,9 +28,11 @@ def decompose_traversal(query, target, coords):
     # Remove tailing consecutive identical steps
     for i, (query_step, target_step) in enumerate(zip(query_steps[::-1], target_steps[::-1])):
         if query_step != target_step:
-            query_steps = query_steps[:len(query_steps) - i + 1]
-            target_steps = target_steps[:len(target_steps) - i + 1]
-            coords = coords[:len(target_steps) - i + 1]
+            query_end = len(query_steps) - i + 1
+            target_end = len(target_steps) - i + 1
+            query_steps = query_steps[:query_end]
+            target_steps = target_steps[:target_end]
+            coords = coords[:target_end]
             break
     source = (0, 0)
     for i, target_step in enumerate(target_steps[:-1]):
