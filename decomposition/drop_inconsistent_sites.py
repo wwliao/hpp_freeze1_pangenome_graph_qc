@@ -43,7 +43,12 @@ for v in vcf:
     source_ids = set(map2source.values())
     if id in source_ids:
         # Drop the REF AT, which is always the first one in AT field
-        alts = v.INFO.get("AT").split(",")[1:]
+        if v.INFO.get("AT"):
+            alts = v.INFO.get("AT").split(",")[1:]
+        else:
+            alts = []
+            for alt in v.INFO.get("UT").split(",")[1:]:
+                alts.append("".join(re.findall("[><]\d+", alt)))
         if id not in source_alts:
             source_alts[id] = set(alts)
         else:
@@ -62,7 +67,13 @@ for v in vcf:
         nested_count = 0
         # Check both REF and ALT traversals
         # since child REF traversal might be in source's ALT traversal
-        alts = v.INFO.get("AT").split(",")
+        if v.INFO.get("AT"):
+            alts = v.INFO.get("AT").split(",")
+        else:
+            alts = []
+            for alt in v.INFO.get("UT").split(","):
+                alts.append("".join(re.findall("[><]\d+", alt)))
+
         for alt in alts:
             for source_alt in source_alts[source_id]:
                 if re.search(alt + "\D+", source_alt + "$"):
