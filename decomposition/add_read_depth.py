@@ -3,6 +3,7 @@ import re
 import gzip
 import argparse
 from statistics import mean
+from os.path import basename
 
 import numpy as np
 from cyvcf2 import VCF, Writer
@@ -52,7 +53,7 @@ vcf.add_format_to_header({
     "Description": "Read depth for each allele"
 })
 
-prefix = re.search("(\S+)\.vcf(?:\.gz)?$", args.vcffile)[1]
+prefix = re.search("(\S+)\.vcf(?:\.gz)?$", basename(args.vcffile))[1]
 w = Writer(f"{prefix}.added_depth.vcf.gz", vcf)
 pattern = re.compile("([><]\d+)")
 for v in vcf:
