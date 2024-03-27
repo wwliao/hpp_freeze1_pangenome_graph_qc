@@ -57,7 +57,7 @@
     ```sh
     python3 decompose_graph_variants.py -o $SAMPLE.$GRAPH.decomposed.unsorted.vcf.gz \
                                            $GRAPH.pg \
-                                           $SAMPLE.$PREFIX.consistent.vcf.gz \
+                                           $SAMPLE.$PREFIX.consistent.biallelic.vcf.gz \
         && bcftools sort -m 10G \
                          -T $SAMPLE_sort_tmp/ \
                          -Oz -o $SAMPLE.$GRAPH.decomposed.vcf.gz \
